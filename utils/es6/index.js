@@ -37,7 +37,7 @@ const createXHR = window.ActiveXObject
 	: // For all other browsers, use the standard XMLHttpRequest object
 	  createStandardXHR;
 
-PizZipUtils.getBinaryContent = function (path, callback) {
+PizZipUtils.getBinaryContent = function (path, callback, opts) {
 	/*
 	 * Here is the tricky part : getting the data.
 	 * In firefox/chrome/opera/... setting the mimeType to 'text/plain; charset=x-user-defined'
@@ -55,7 +55,13 @@ PizZipUtils.getBinaryContent = function (path, callback) {
 	try {
 		const xhr = createXHR();
 
-		xhr.open("GET", path, true);
+		if(opts && opts.hasOwnProperty('headers')){
+			const {headers} = opts;
+			Object.entries(headers).map(item => {
+				const [key, value]= item;
+				xhr.setRequestHeader(key, value);
+			});
+		}
 
 		// recent browsers
 		if ("responseType" in xhr) {
